@@ -1,1 +1,3 @@
 node_modules
+.streamlit/secrets.toml
+__pycache__/

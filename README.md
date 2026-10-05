@@ -63,6 +63,20 @@ Then open http://localhost:10000/access/kozo_test.
 On Render, create a Node web service with build command `npm install` and start command `npm start`,
 and set `ACCESS_TOKENS` and `SESSION_SECRET`.
 
+## Deploying on Streamlit Community Cloud
+
+1. Go to **share.streamlit.io**, sign in with GitHub, then click **Create app**.
+2. Repository: `philipjosiah252022-collab/Kozo-Night-Audit-Report-Dashboard`. Branch: `main`. Main file: `streamlit_app.py`.
+3. Under **Advanced settings → Secrets**, paste one line per person (format shown in `.streamlit/secrets.example.toml`):
+   ```
+   [access_tokens]
+   "Philip Anthony Josiah" = "kozo_..."
+   ```
+4. Click **Deploy**.
+
+Each person signs in with their token, or opens `https://<app>.streamlit.app/?token=<their token>`.
+Deleting their line from Secrets withdraws their access. Make new tokens with `node scripts/new-token.js "Name"`.
+
 ## Data
 
 `src/nights.json` holds every recorded night, and `public/slips/` holds the photos. This repository contains
