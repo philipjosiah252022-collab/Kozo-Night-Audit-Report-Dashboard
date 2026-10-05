@@ -1,0 +1,18 @@
+# Render Blueprint for the Kozo Night Audit Report Dashboard.
+# In Render: New → Blueprint → pick this repository → Apply.
+services:
+  - type: web
+    name: kozo-night-audit
+    runtime: node
+    region: frankfurt
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: ACCESS_TOKENS        # Name:token pairs, comma separated. Render asks for this when you apply.
+        sync: false
+      - key: SESSION_SECRET       # Render generates a random value.
+        generateValue: true
