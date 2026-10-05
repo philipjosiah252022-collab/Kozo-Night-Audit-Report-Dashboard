@@ -63,7 +63,7 @@ Then open http://localhost:10000/access/kozo_test.
 On Render, create a Node web service with build command `npm install` and start command `npm start`,
 and set `ACCESS_TOKENS` and `SESSION_SECRET`.
 
-## Data is not stored here
+## Data
 
-This repository is public, so it holds only the dashboard code. `src/nights.json` is empty and `public/slips/` has no photos.
-Kozo's nightly figures and slip photos live in the private Claude-hosted dashboard. Only add them here if the repository is made **private** first.
+`src/nights.json` holds every recorded night, and `public/slips/` holds the photos. This repository contains
+Kozo's sales figures, staff names and slip photos, so it must stay **private**.
