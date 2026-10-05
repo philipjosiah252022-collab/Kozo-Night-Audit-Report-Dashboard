@@ -29,17 +29,25 @@ function whoForSecret(secret) {
   if (PASSWORD && crypto.timingSafeEqual(sha(secret), sha(PASSWORD))) return ADMIN;
   return null;
 }
-const stillAllowed = name => name === ADMIN ? !!PASSWORD : TOKENS.has(name);
+// A session is tied to the person's current key: change or remove their key and the session ends.
+function keyPrint(name) {
+  const h = name === ADMIN ? (PASSWORD ? sha(PASSWORD) : null) : TOKENS.get(name);
+  return h ? crypto.createHash('sha256').update(h).digest('hex').slice(0, 16) : null;
+}
 
 const sign = v => crypto.createHmac('sha256', SECRET).update(v).digest('hex');
-function makeSession(name) { const v = String(Date.now() + DAYS * 864e5) + '.' + Buffer.from(name).toString('base64url'); return v + '.' + sign(v); }
+function makeSession(name) {
+  const v = String(Date.now() + DAYS * 864e5) + '.' + Buffer.from(name).toString('base64url') + '.' + keyPrint(name);
+  return v + '.' + sign(v);
+}
 function readSession(t) {
-  if (!t) return null; const parts = t.split('.'); if (parts.length !== 3) return null;
-  const v = parts[0] + '.' + parts[1], good = sign(v);
-  if (parts[2].length !== good.length || !crypto.timingSafeEqual(Buffer.from(parts[2]), Buffer.from(good))) return null;
+  if (!t) return null; const parts = t.split('.'); if (parts.length !== 4) return null;
+  const v = parts.slice(0, 3).join('.'), good = sign(v);
+  if (parts[3].length !== good.length || !crypto.timingSafeEqual(Buffer.from(parts[3]), Buffer.from(good))) return null;
   if (Number(parts[0]) < Date.now()) return null;
   const name = Buffer.from(parts[1], 'base64url').toString();
-  return stillAllowed(name) ? name : null;
+  const print = keyPrint(name);
+  return print && print === parts[2] ? name : null;
 }
 function cookie(req, name) { const m = (req.headers.cookie || '').match(new RegExp('(?:^|; )' + name + '=([^;]*)')); return m ? decodeURIComponent(m[1]) : null; }
 const sessionCookie = name => `kozo_session=${makeSession(name)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${DAYS * 86400}`;
