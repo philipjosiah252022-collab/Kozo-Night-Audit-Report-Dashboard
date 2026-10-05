@@ -1,6 +1,6 @@
 """Kozo Night Audit Report Dashboard on Streamlit.
 
-Viewers sign in with a personal access token: type it on the sign-in screen,
+Viewers sign in with a personal 8-character access key: type it on the sign-in screen,
 or open the one-tap link  https://<app>.streamlit.app/?token=<token>
 Tokens are set in the app's Secrets (see .streamlit/secrets.example.toml).
 Remove someone's line from Secrets to withdraw their access.
@@ -41,12 +41,16 @@ def load_tokens() -> dict:
     return out
 
 
+def norm(key: str) -> str:
+    return "".join(ch for ch in str(key or "").upper() if ch.isalnum() or ch == "_")
+
+
 def who_for(token: str, tokens: dict):
     if not token:
         return None
-    h = hashlib.sha256(token.strip().encode()).digest()
+    h = hashlib.sha256(norm(token).encode()).digest()
     for name, tok in tokens.items():
-        if hmac.compare_digest(h, hashlib.sha256(tok.encode()).digest()):
+        if hmac.compare_digest(h, hashlib.sha256(norm(tok).encode()).digest()):
             return name
     return None
 
@@ -71,18 +75,18 @@ if not st.session_state.get("who"):
     with mid:
         st.markdown("<div style='height:8vh'></div>", unsafe_allow_html=True)
         st.markdown("## Kozo Night Audit Report Dashboard")
-        st.write("Enter the access token you were sent. If you were sent a link, opening it signs you in.")
+        st.write("Enter your 8-character access key. If you were sent a link, opening it signs you in.")
         if st.session_state.pop("bad_link", False):
             st.error("This access link is not valid or has been withdrawn. Ask the night auditor for a new one.")
         with st.form("signin"):
-            tok = st.text_input("Access token", type="password")
+            tok = st.text_input("Access key", type="password", max_chars=40, placeholder="e.g. AB3K7MQZ")
             if st.form_submit_button("View reports", use_container_width=True):
                 who = who_for(tok, tokens)
                 if who:
                     st.session_state["who"] = who
                     st.query_params["token"] = tok.strip()  # keeps them signed in on refresh
                     st.rerun()
-                st.error("That access token is not right. Check it and try again.")
+                st.error("That access key is not right. Check it and try again.")
     st.stop()
 
 
