@@ -1,0 +1,387 @@
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <img class="logo" src="{{LOGO}}" alt="Kozo">
+      <div>
+        <h1>Kozo Night Audit Report Dashboard</h1>
+        <p>Restaurant · Lounge · Embar · all figures in GH₵</p>
+        <p class="today"><span id="todayDate"></span><span class="dot-sep">·</span><span id="latestNight"></span></p>
+      </div>
+    </div>
+    <div class="seg" role="tablist" aria-label="View">
+      <button type="button" role="tab" data-tab="day">Day's sales</button>
+      <button type="button" role="tab" data-tab="history">History</button>
+    </div>
+  </header>
+
+  <!-- ============ DAY VIEW ============ -->
+  <main id="view-day">
+    <section class="day-head">
+      <div>
+        <span class="eyebrow" id="dayEyebrow"></span>
+        <h2 class="day-title" id="dayTitle"></h2>
+        <span class="hint" id="daySrc"></span>
+      </div>
+      <div class="day-nav">
+        <button class="nav-btn" id="prevDay" type="button" aria-label="Previous night">‹ Previous</button>
+        <select class="search" id="dayPick" aria-label="Choose a night"></select>
+        <button class="nav-btn" id="nextDay" type="button" aria-label="Next night">Next ›</button>
+        <button class="btn" id="copyNight" type="button">Copy day summary</button>
+      </div>
+    </section>
+
+    <section class="kpis" aria-label="Day totals">
+      <div class="kpi hero"><span class="label">Total sales</span><span class="big" id="d-rev"></span><span class="sub" id="d-rev-s"></span></div>
+      <div class="kpi"><span class="label">Net sales</span><span class="big" id="d-net"></span><span class="sub" id="d-net-s"></span></div>
+      <div class="kpi"><span class="label">Covers</span><span class="big" id="d-cov"></span><span class="sub" id="d-cov-s"></span></div>
+      <div class="kpi"><span class="label">Spend per cover</span><span class="big" id="d-spc"></span><span class="sub" id="d-spc-s"></span></div>
+      <div class="kpi"><span class="label">Comps &amp; discounts</span><span class="big" id="dk-disc"></span><span class="sub" id="dk-disc-s"></span></div>
+      <div class="kpi"><span class="label">Cash check</span><span class="big" id="d-cash"></span><span class="sub" id="d-cash-s"></span></div>
+    </section>
+
+    <section class="grid">
+      <div class="card s4">
+        <div class="card-h"><h2>Sales by outlet</h2><span class="hint">Incl. service charge</span></div>
+        <div class="mix" id="dayOutlets"></div>
+      </div>
+      <div class="card s4">
+        <div class="card-h"><h2>Payments</h2><span class="hint" id="payHint"></span></div>
+        <div class="mix" id="dayTender"></div>
+      </div>
+      <div class="card s4">
+        <div class="card-h"><h2>Sales by category</h2><span class="hint">Gross</span></div>
+        <div class="mix" id="dayCat"></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card s12" id="detail">
+        <div class="detail-grid">
+          <div class="sub-card" style="grid-column:span 12">
+            <h3>Outlets</h3>
+            <div class="tbl-wrap"><table>
+              <thead><tr><th>Outlet</th><th class="n">Covers</th><th class="n">Txns</th><th class="n">Sales (gross)</th><th class="n">Service chg.</th><th class="n">Total</th><th class="n">Net sales</th><th class="n">Tax &amp; levies</th><th class="n">Per cover</th></tr></thead>
+              <tbody id="d-outlets"></tbody><tfoot id="d-outlets-f"></tfoot>
+            </table></div>
+          </div>
+          <div class="sub-card" style="grid-column:span 6">
+            <h3>Tenders by outlet</h3>
+            <div class="tbl-wrap"><table>
+              <thead><tr><th>Tender</th><th class="n">Restaurant</th><th class="n">Lounge</th><th class="n">Embar</th><th class="n">Total</th></tr></thead>
+              <tbody id="d-tend"></tbody>
+            </table></div>
+          </div>
+          <div class="sub-card" style="grid-column:span 6">
+            <h3>Comps, discounts &amp; voids</h3>
+            <div class="tbl-wrap"><table>
+              <thead><tr><th>Outlet</th><th>Type</th><th class="n">Items</th><th class="n">Gross</th></tr></thead>
+              <tbody id="d-disc"></tbody>
+            </table></div>
+            <div id="d-voids" class="hint"></div>
+          </div>
+          <div class="sub-card" style="grid-column:span 12" id="d-recon-wrap">
+            <h3>Cash &amp; card reconciliation</h3>
+            <div class="recon" id="d-recon"></div>
+          </div>
+          <div class="sub-card" style="grid-column:span 12" id="d-photos-wrap">
+            <div class="card-h"><h3>Source photos</h3><span class="hint">Tap a photo to view it full size</span></div>
+            <div class="thumbs" id="d-photos"></div>
+          </div>
+          <div class="sub-card" style="grid-column:span 12">
+            <h3>Notes</h3>
+            <ul class="notes" id="d-notes"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ HISTORY VIEW ============ -->
+  <main id="view-history" hidden>
+    <section class="day-head">
+      <div><span class="eyebrow">Trading history</span><h2 class="day-title">All recorded nights</h2></div>
+      <div class="seg" role="group" aria-label="Period">
+        <button type="button" data-range="7">Last 7 nights</button>
+        <button type="button" data-range="30">Last 30 nights</button>
+        <button type="button" data-range="month">This month</button>
+        <button type="button" data-range="all">All nights</button>
+      </div>
+    </section>
+
+    <section class="kpis" aria-label="Period totals">
+      <div class="kpi"><span class="label">Total revenue</span><span class="big" id="k-rev"></span><span class="sub" id="k-rev-s"></span></div>
+      <div class="kpi"><span class="label">Average per night</span><span class="big" id="k-avg"></span><span class="sub" id="k-avg-s"></span></div>
+      <div class="kpi"><span class="label">Covers</span><span class="big" id="k-cov"></span><span class="sub" id="k-cov-s"></span></div>
+      <div class="kpi"><span class="label">Spend per cover</span><span class="big" id="k-spc"></span><span class="sub">Revenue ÷ covers</span></div>
+      <div class="kpi"><span class="label">Comps &amp; discounts</span><span class="big" id="k-disc"></span><span class="sub" id="k-disc-s"></span></div>
+      <div class="kpi"><span class="label">Best night</span><span class="big" id="k-best"></span><span class="sub" id="k-best-s"></span></div>
+    </section>
+
+    <section class="grid">
+      <div class="card s8">
+        <div class="card-h"><h2>Revenue by night</h2>
+          <div class="legend-inline"><span><i class="sw" style="background:var(--c-rest)"></i>Restaurant</span><span><i class="sw" style="background:var(--c-lounge)"></i>Lounge</span><span><i class="sw" style="background:var(--c-embar)"></i>Embar</span></div></div>
+        <svg class="chart" id="dailyChart" viewBox="0 0 760 280" role="img" aria-label="Revenue by night, stacked by outlet"></svg>
+        <p class="empty-note" id="fewNote" hidden></p>
+      </div>
+      <div class="card s4">
+        <div class="card-h"><h2>Outlet share</h2><span class="hint">Incl. service charge</span></div>
+        <div class="mix" id="outletMix"></div>
+      </div>
+      <div class="card s6">
+        <div class="card-h"><h2>Payment mix</h2><span class="hint">Settled tenders</span></div>
+        <div class="mix" id="tenderMix"></div>
+      </div>
+      <div class="card s6">
+        <div class="card-h"><h2>Sales by category</h2><span class="hint">Gross, before service charge</span></div>
+        <div class="mix" id="catMix"></div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card s12">
+        <div class="card-h"><h2>Nights</h2><span class="hint">Tap a night to open its day report</span>
+          <input class="search" id="q" type="search" placeholder="Find a date, e.g. 3 Oct" aria-label="Find a night"></div>
+        <div class="tbl-wrap"><table id="ledger">
+          <thead><tr><th>Business date</th><th class="n">Restaurant</th><th class="n">Lounge</th><th class="n">Embar</th><th class="n">Total</th><th class="n">Covers</th><th class="n">Card</th><th class="n">MoMo</th><th class="n">Cash</th><th class="n">Discounts</th><th>Voids</th><th>Cash count</th></tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+  <div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Source photo">
+    <div class="viewer-bar">
+      <span id="vCaption"></span>
+      <div class="viewer-actions">
+        <button class="nav-btn" id="vZoom" type="button">Zoom in</button>
+        <button class="nav-btn" id="vPrev" type="button" aria-label="Previous photo">‹</button>
+        <span class="hint" id="vCount"></span>
+        <button class="nav-btn" id="vNext" type="button" aria-label="Next photo">›</button>
+        <button class="btn" id="vClose" type="button">Close</button>
+      </div>
+    </div>
+    <div class="viewer-stage" id="vStage"><img id="vImg" alt=""></div>
+  </div>
+  <footer class="foot"><span>Kozo · night audit report dashboard</span><span id="updated"></span></footer>
+</div>
+
+<script type="application/json" id="nights-data">{{DATA}}</script>
+<script>
+(function(){
+const NIGHTS=JSON.parse(document.getElementById('nights-data').textContent).sort((a,b)=>a.date<b.date?-1:1);
+const OUT=[['restaurant','Restaurant','--c-rest'],['lounge','Lounge','--c-lounge'],['embar','Embar','--c-embar']];
+const TEN=[['card','Card','--slate'],['momo','Mobile money','--amber'],['cash','Cash','--accent']];
+const CAT=[['food','Food','--accent'],['bev','Beverage','--slate'],['shisha','Shisha','--amber'],['merch','Merchandise','--rose']];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const f2=v=>Number(v||0).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const ced=v=>'GH₵ '+f2(v);
+const money=v=>`<small class="cur">GH₵</small>${f2(v)}`;
+const ced0=v=>'GH₵ '+Math.round(v||0).toLocaleString('en-GH');
+const pct=(a,b)=>b?a/b*100:0;
+const dt=s=>new Date(s+'T12:00:00Z');
+const dayLong=s=>dt(s).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+const dayShort=s=>dt(s).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',timeZone:'UTC'});
+const accraToday=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Accra',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+
+const oTot=o=>o?(o.gross+o.service):0;
+const nTot=n=>OUT.reduce((t,[k])=>t+oTot(n.outlets[k]),0);
+const nSum=(n,fn)=>OUT.reduce((t,[k])=>t+(n.outlets[k]?fn(n.outlets[k]):0),0);
+const sumN=(list,fn)=>list.reduce((t,n)=>t+fn(n),0);
+const nDisc=n=>(n.discountLines||[]).reduce((t,d)=>t+d.gross,0)||nSum(n,o=>o.discounts||0);
+
+let range='all',tab='day';
+try{range=localStorage.getItem('kozo-hist-range')||'all'}catch(e){}
+if(location.hash==='#history')tab='history';
+let selected=NIGHTS.length?NIGHTS[NIGHTS.length-1].date:null;
+
+/* ---------- shared bits ---------- */
+function mixRows(el,rows,total){
+  el.innerHTML=rows.map(([label,v,c])=>`<div class="mrow"><span>${esc(label)}</span><div class="bar"><i style="width:${total?v/total*100:0}%;background:var(${c})"></i></div><span class="v">${f2(v)}</span><span class="p">${pct(v,total).toFixed(1)}%</span></div>`).join('');
+}
+function outletRows(el,list,rev){
+  el.innerHTML=OUT.map(([k,l,c])=>{const v=sumN(list,n=>oTot(n.outlets[k])),cv=sumN(list,n=>(n.outlets[k]||{}).covers||0),d=sumN(list,n=>(n.outlets[k]||{}).discounts||0);
+    if(list.length===1&&v===0)return `<div class="orow"><span class="nm">${l}</span><span class="v muted">No sales</span><div class="bar"><i style="width:0"></i></div></div>`;
+    return `<div class="orow"><span class="nm">${l}</span><span class="v">${f2(v)} <span class="muted">· ${pct(v,rev).toFixed(1)}%</span></span><div class="bar"><i style="width:${pct(v,rev)}%;background:var(${c})"></i></div><div class="meta"><span>${cv} covers</span><span>${cv?ced(v/cv):'—'} per cover</span><span>${d?ced(d)+' discounts':'No discounts'}</span></div></div>`}).join('');
+}
+function deltaTxt(cur,prev,label){if(prev==null||!prev)return '';const d=pct(cur-prev,prev);return `<span class="delta ${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d).toFixed(1)}%</span> vs ${label}`}
+function cashState(n){if(n.cashCounted==null)return null;return n.cashCounted-nSum(n,o=>o.tender.cash||0)}
+
+/* ---------- day view ---------- */
+function renderDay(){
+  const i=NIGHTS.findIndex(x=>x.date===selected);const n=NIGHTS[i];
+  if(!n){$('dayTitle').textContent='No sales recorded yet';return}
+  const prev=i>0?NIGHTS[i-1]:null;const today=accraToday();
+  const isLatest=i===NIGHTS.length-1;
+  $('dayEyebrow').textContent=n.date===today?'Today’s sales':(isLatest?'Latest day’s sales':'Day’s sales');
+  $('dayTitle').textContent=dayLong(n.date);
+  $('daySrc').textContent=`${n.trading} · ${n.source}`;
+  $('prevDay').disabled=i<=0;$('nextDay').disabled=isLatest;
+  $('dayPick').innerHTML=NIGHTS.slice().reverse().map(x=>`<option value="${x.date}"${x.date===n.date?' selected':''}>${dayShort(x.date)} ${x.date.slice(0,4)}</option>`).join('');
+  const rev=nTot(n),cov=nSum(n,o=>o.covers),net=nSum(n,o=>o.net),gross=nSum(n,o=>o.gross),disc=nDisc(n);
+  const pl=prev?dayShort(prev.date):'';
+  $('d-rev').innerHTML=money(rev);
+  $('d-rev-s').innerHTML=prev?deltaTxt(rev,nTot(prev),pl):'Sales + service charge';
+  $('d-net').innerHTML=money(net);
+  $('d-net-s').textContent=`After ${ced0(nSum(n,o=>o.tax))} tax & ${ced0(nSum(n,o=>o.service))} service`;
+  $('d-cov').textContent=cov;
+  $('d-cov-s').innerHTML=prev?deltaTxt(cov,nSum(prev,o=>o.covers),pl):`${nSum(n,o=>o.txns)} transactions`;
+  $('d-spc').innerHTML=cov?money(rev/cov):'—';
+  $('d-spc-s').innerHTML=prev&&nSum(prev,o=>o.covers)?deltaTxt(rev/cov,nTot(prev)/nSum(prev,o=>o.covers),pl):'Revenue ÷ covers';
+  $('dk-disc').innerHTML=money(disc);
+  $('dk-disc-s').textContent=gross?`${pct(disc,gross).toFixed(1)}% of gross sales`:'';
+  const cs=cashState(n);
+  $('d-cash').innerHTML=cs==null?'<span class="muted">Not counted</span>':(Math.abs(cs)<.005?'Balanced':(cs<0?'Short ':'Over ')+f2(Math.abs(cs)));
+  $('d-cash').className='big '+(cs==null?'':Math.abs(cs)<.005?'ok':cs<0?'neg':'warnc');
+  $('d-cash-s').textContent=cs==null?'Send the cash-up sheet to add it':`Counted ${f2(n.cashCounted)} vs POS ${f2(n.cashCounted-cs)}`;
+  outletRows($('dayOutlets'),[n],rev);
+  const tt=TEN.map(([k,l,c])=>[l,nSum(n,o=>o.tender[k]||0),c]);const tts=tt.reduce((t,r)=>t+r[1],0);mixRows($('dayTender'),tt,tts);
+  $('payHint').innerHTML=Math.abs(tts-rev)<.005?'<span class="pill good">Balances with sales</span>':`<span class="pill bad">${f2(tts-rev)} off sales</span>`;
+  mixRows($('dayCat'),CAT.map(([k,l,c])=>[l,nSum(n,o=>o.cat[k]||0),c]),gross);
+  renderDetail(n);
+}
+
+function renderDetail(n){
+  $('d-outlets').innerHTML=OUT.map(([k,l,c])=>{const o=n.outlets[k];
+    if(!o||oTot(o)===0)return `<tr><td><i class="sw" style="background:var(${c})"></i>${l}</td><td colspan="8" class="muted">No sales</td></tr>`;
+    return `<tr><td><i class="sw" style="background:var(${c})"></i>${l}</td><td class="n">${o.covers}</td><td class="n">${o.txns}</td><td class="n">${f2(o.gross)}</td><td class="n">${f2(o.service)}</td><td class="n b">${f2(oTot(o))}</td><td class="n">${f2(o.net)}</td><td class="n">${f2(o.tax)}</td><td class="n">${o.covers?f2(oTot(o)/o.covers):'—'}</td></tr>`}).join('');
+  const cv=nSum(n,o=>o.covers);
+  $('d-outlets-f').innerHTML=`<tr><td>Total</td><td class="n">${cv}</td><td class="n">${nSum(n,o=>o.txns)}</td><td class="n">${f2(nSum(n,o=>o.gross))}</td><td class="n">${f2(nSum(n,o=>o.service))}</td><td class="n">${f2(nTot(n))}</td><td class="n">${f2(nSum(n,o=>o.net))}</td><td class="n">${f2(nSum(n,o=>o.tax))}</td><td class="n">${cv?f2(nTot(n)/cv):'—'}</td></tr>`;
+  $('d-tend').innerHTML=TEN.map(([k,l])=>`<tr><td>${l}</td>${OUT.map(([o])=>{const x=n.outlets[o];return `<td class="n">${x&&oTot(x)>0?f2(x.tender[k]||0):'<span class="muted">—</span>'}</td>`}).join('')}<td class="n b">${f2(nSum(n,o=>o.tender[k]||0))}</td></tr>`).join('');
+  const dl=n.discountLines||[];
+  $('d-disc').innerHTML=dl.length?dl.map(d=>`<tr><td>${esc(d.outlet)}</td><td>${esc(d.type)}</td><td class="n">${d.items??'—'}</td><td class="n">${f2(d.gross)}</td></tr>`).join(''):'<tr><td colspan="4" class="muted">No comps or discounts.</td></tr>';
+  $('d-voids').innerHTML=n.voids==null?'Voids: not on the slips for this night. Send the void reports and they will be added.':`Voids: ${n.voids.items} items, ${ced(n.voids.amount)}${n.voids.note?' · '+esc(n.voids.note):''}`;
+  const r=n.recon;$('d-recon-wrap').hidden=!r&&n.cashCounted==null;
+  if(r||n.cashCounted!=null){const exp=nSum(n,o=>o.tender.cash||0),cardPos=nSum(n,o=>o.tender.card||0),momoPos=nSum(n,o=>o.tender.momo||0);
+    const line=(a,b,cls='')=>`<div class="rline ${cls}"><span>${a}</span><span>${b}</span></div>`;
+    let h='<div class="rbox"><h4>Cash count</h4>';
+    (r&&r.denoms||[]).forEach(([dn,q])=>h+=line(`${q} × GH₵ ${dn}`,f2(dn*q)));
+    const dv=(n.cashCounted||0)-exp;
+    h+=line('Counted',f2(n.cashCounted||0),'t')+line('Expected (POS)',f2(exp))+line('Variance',Math.abs(dv)<.005?'<span class="pill good">Balanced</span>':`<span class="pill ${dv<0?'bad':'warn'}">${dv<0?'Short':'Over'} ${f2(Math.abs(dv))}</span>`)+(r&&r.cashier?line('Cashier',esc(r.cashier)):'')+'</div>';
+    if(r&&r.cards){const ct=r.cards.reduce((t,c)=>t+c[2],0);h+='<div class="rbox"><h4>Card terminals</h4>'+r.cards.map(([b,q,a])=>line(`${esc(b)} · ${q} txns`,f2(a))).join('')+line('Terminal total',f2(ct),'t')+line('POS card total',f2(cardPos))+line('Difference',Math.abs(ct-cardPos)<.005?'<span class="pill good">Matches</span>':`<span class="pill bad">${f2(ct-cardPos)}</span>`)+'</div>'}
+    if(r&&r.momo){h+='<div class="rbox"><h4>Mobile money</h4>'+line(`Sheet · ${r.momo[0]} payments`,f2(r.momo[1]))+line('POS MoMo total',f2(momoPos),'t')+line('Difference',Math.abs(r.momo[1]-momoPos)<.005?'<span class="pill good">Matches</span>':`<span class="pill bad">${f2(r.momo[1]-momoPos)}</span>`)+'</div>'}
+    $('d-recon').innerHTML=h}
+  const ph=n.photos||[];$('d-photos-wrap').hidden=false;
+  $('d-photos').innerHTML=ph.length?ph.map((p,i)=>`<button class="thumb" type="button" data-photo="${i}"><img src="${esc(p.src)}" alt="${esc(p.label)}" loading="lazy"><span>${esc(p.label)}</span></button>`).join(''):'<p class="hint" style="margin:0">No photos were attached for this night.</p>';
+  $('d-notes').innerHTML=(n.notes||[]).length?n.notes.map(t=>`<li>${esc(t)}</li>`).join(''):'<li class="muted">No notes for this night.</li>';
+}
+
+/* ---------- history view ---------- */
+function inRange(){
+  if(!NIGHTS.length)return[];
+  const last=NIGHTS[NIGHTS.length-1].date;
+  if(range==='all')return NIGHTS.slice();
+  if(range==='month')return NIGHTS.filter(n=>n.date.slice(0,7)===last.slice(0,7));
+  const cut=new Date(dt(last).getTime()-(+range-1)*864e5).toISOString().slice(0,10);
+  return NIGHTS.filter(n=>n.date>=cut);
+}
+function niceMax(v){if(v<=0)return 1;const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p}
+function drawDaily(list){
+  const W=760,H=280,L=56,R=10,T=14,B=30,pw=W-L-R,ph=H-T-B;
+  const max=niceMax(Math.max(...list.map(nTot),0));const y=v=>T+ph-v/max*ph;let g='';
+  for(let k=0;k<=4;k++){const v=max*k/4;g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" ${k?'stroke-dasharray="3 4"':''}/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${v>=1000?Math.round(v/1000)+'k':Math.round(v)}</text>`}
+  const n=list.length,slot=pw/Math.max(n,1),bw=Math.min(slot*.62,64),step=Math.ceil(n/12);
+  list.forEach((night,i)=>{const cx=L+slot*i+slot/2;let acc=0;
+    OUT.forEach(([k,label,c])=>{const v=oTot(night.outlets[k]);if(v<=0)return;const y0=y(acc),y1=y(acc+v);
+      g+=`<rect x="${cx-bw/2}" y="${y1}" width="${bw}" height="${Math.max(y0-y1-1.5,0.5)}" rx="3" fill="var(${c})"><title>${dayShort(night.date)} · ${label}: ${ced(v)}</title></rect>`;acc+=v});
+    g+=`<rect x="${cx-slot/2}" y="${T}" width="${slot}" height="${ph}" fill="transparent" data-date="${night.date}" style="cursor:pointer"><title>${dayShort(night.date)}: ${ced(acc)} · open day report</title></rect>`;
+    if(i%step===0||i===n-1)g+=`<text x="${cx}" y="${H-10}" text-anchor="middle">${dayShort(night.date).replace(',','')}</text>`});
+  $('dailyChart').innerHTML=g;
+  const note=$('fewNote');if(n<7){note.hidden=false;note.textContent=`${n} night${n===1?'':'s'} recorded so far. Trends become clearer after a week.`}else note.hidden=true;
+}
+function voidCell(n){return n.voids==null?'<span class="pill warn">Not entered</span>':(n.voids.items?`<span class="pill good">${n.voids.items} · ${f2(n.voids.amount)}</span>`:'<span class="pill good">None</span>')}
+function cashCell(n){const d=cashState(n);if(d==null)return '<span class="pill warn">Not counted</span>';return Math.abs(d)<.005?'<span class="pill good">Balanced</span>':`<span class="pill ${d<0?'bad':'warn'}">${d<0?'Short':'Over'} ${f2(Math.abs(d))}</span>`}
+function renderHistory(){
+  document.querySelectorAll('[data-range]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.range===range)));
+  const list=inRange();
+  const rev=sumN(list,nTot),cov=sumN(list,n=>nSum(n,o=>o.covers)),disc=sumN(list,nDisc),gross=sumN(list,n=>nSum(n,o=>o.gross));
+  $('k-rev').textContent=ced0(rev);$('k-rev-s').textContent=`${list.length} night${list.length===1?'':'s'} · sales + service charge`;
+  $('k-avg').textContent=list.length?ced0(rev/list.length):'—';$('k-avg-s').textContent=list.length?`${(cov/list.length).toFixed(0)} covers a night`:'';
+  $('k-cov').textContent=cov.toLocaleString('en-GH');$('k-cov-s').textContent=`${sumN(list,n=>nSum(n,o=>o.txns))} transactions`;
+  $('k-spc').textContent=cov?ced(rev/cov):'—';
+  $('k-disc').textContent=ced0(disc);$('k-disc-s').textContent=gross?`${pct(disc,gross).toFixed(1)}% of gross sales`:'';
+  const best=list.slice().sort((a,b)=>nTot(b)-nTot(a))[0];
+  $('k-best').textContent=best?ced0(nTot(best)):'—';$('k-best-s').textContent=best?dayShort(best.date):'';
+  drawDaily(list);outletRows($('outletMix'),list,rev);
+  const tt=TEN.map(([k,l,c])=>[l,sumN(list,n=>nSum(n,o=>o.tender[k]||0)),c]);mixRows($('tenderMix'),tt,tt.reduce((t,r)=>t+r[1],0));
+  mixRows($('catMix'),CAT.map(([k,l,c])=>[l,sumN(list,n=>nSum(n,o=>o.cat[k]||0)),c]),gross);
+  renderLedger(list);
+}
+function renderLedger(list){
+  const q=$('q').value.trim().toLowerCase();
+  const rows=list.slice().reverse().filter(n=>!q||(n.date+' '+dayLong(n.date)+' '+dayShort(n.date)).toLowerCase().includes(q));
+  const oc=(n,k)=>{const o=n.outlets[k];return `<td class="n">${o&&oTot(o)>0?f2(oTot(o)):'<span class="muted">no sales</span>'}</td>`};
+  $('ledger').querySelector('tbody').innerHTML=rows.length?rows.map(n=>`<tr tabindex="0" data-date="${n.date}">
+    <td>${esc(dayShort(n.date))} ${n.date.slice(0,4)}</td>${OUT.map(([k])=>oc(n,k)).join('')}
+    <td class="n b">${f2(nTot(n))}</td><td class="n">${nSum(n,o=>o.covers)}</td>
+    ${TEN.map(([k])=>`<td class="n">${f2(nSum(n,o=>o.tender[k]||0))}</td>`).join('')}
+    <td class="n">${f2(nDisc(n))}</td><td>${voidCell(n)}</td><td>${cashCell(n)}</td></tr>`).join('')
+    :`<tr><td colspan="12" class="muted" style="padding:16px 8px">No night matches “${esc(q)}”.</td></tr>`;
+  $('ledger').querySelector('tfoot').innerHTML=list.length>1?`<tr><td>Period total</td>${OUT.map(([k])=>`<td class="n">${f2(sumN(list,n=>oTot(n.outlets[k])))}</td>`).join('')}<td class="n">${f2(sumN(list,nTot))}</td><td class="n">${sumN(list,n=>nSum(n,o=>o.covers))}</td>${TEN.map(([k])=>`<td class="n">${f2(sumN(list,n=>nSum(n,o=>o.tender[k]||0)))}</td>`).join('')}<td class="n">${f2(sumN(list,nDisc))}</td><td></td><td></td></tr>`:'';
+}
+
+/* ---------- summary text ---------- */
+function nightText(n){
+  const L=[`KOZO DAY REPORT — ${dayLong(n.date)}`,n.source,''];
+  L.push(`TOTAL SALES: GH₵ ${f2(nTot(n))}`);
+  L.push(`  Sales (gross) ${f2(nSum(n,o=>o.gross))} + Service charge ${f2(nSum(n,o=>o.service))}`);
+  L.push(`  Net sales ${f2(nSum(n,o=>o.net))} | Taxes & levies ${f2(nSum(n,o=>o.tax))}`);
+  const cv=nSum(n,o=>o.covers);L.push(`  Covers ${cv} | Transactions ${nSum(n,o=>o.txns)} | Per cover ${cv?f2(nTot(n)/cv):'-'}`,'');
+  L.push('BY OUTLET (incl. service charge)');OUT.forEach(([k,l])=>{const o=n.outlets[k];L.push(o&&oTot(o)>0?`  ${l}: ${f2(oTot(o))} — ${o.covers} covers`:`  ${l}: no sales`)});L.push('');
+  L.push('CATEGORIES (gross)');L.push('  '+CAT.map(([k,l])=>`${l} ${f2(nSum(n,o=>o.cat[k]||0))}`).join(' | '),'');
+  L.push('PAYMENTS');L.push('  '+TEN.map(([k,l])=>`${l} ${f2(nSum(n,o=>o.tender[k]||0))}`).join(' | '),'');
+  const dl=n.discountLines||[];L.push(`COMPS & DISCOUNTS: GH₵ ${f2(nDisc(n))}`);dl.forEach(d=>L.push(`  ${d.type}: ${f2(d.gross)}`));L.push('');
+  L.push('VOIDS: '+(n.voids==null?'not entered':(n.voids.items?`${n.voids.items} items, GH₵ ${f2(n.voids.amount)}`:'none recorded')));
+  const cs=cashState(n);if(cs!=null)L.push(`CASH: counted ${f2(n.cashCounted)} vs POS ${f2(n.cashCounted-cs)} (variance ${f2(cs)})`);
+  if((n.notes||[]).length){L.push('','NOTES');n.notes.forEach(x=>L.push('  - '+x))}
+  return L.join('\n');
+}
+function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(t._t);t._t=setTimeout(()=>t.hidden=true,2600)}
+$('copyNight').addEventListener('click',()=>{const n=NIGHTS.find(x=>x.date===selected);if(!n)return;const txt=nightText(n);
+  const fb=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;inset:10% 5%;width:90%;height:80%;z-index:30;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:12px;font:13px var(--mono)';document.body.appendChild(ta);ta.select();toast('Select all and copy, then tap outside');ta.addEventListener('blur',()=>ta.remove())};
+  try{navigator.clipboard.writeText(txt).then(()=>toast('Day summary copied. Paste it into WhatsApp or email.'),fb)}catch(e){fb()}});
+
+/* ---------- photo viewer ---------- */
+let vList=[],vIdx=0,vZoomed=false,lastFocus=null;
+function showPhoto(){const p=vList[vIdx];$('vImg').src=p.src;$('vImg').alt=p.label;$('vCaption').textContent=p.label;
+  $('vCount').textContent=`${vIdx+1} of ${vList.length}`;$('vPrev').disabled=vIdx===0;$('vNext').disabled=vIdx===vList.length-1;setZoom(false)}
+function setZoom(z){vZoomed=z;$('vStage').classList.toggle('zoomed',z);$('vZoom').textContent=z?'Fit to screen':'Zoom in'}
+function openViewer(i){const n=NIGHTS.find(x=>x.date===selected);vList=(n&&n.photos)||[];if(!vList.length)return;vIdx=i;lastFocus=document.activeElement;$('viewer').hidden=false;document.body.style.overflow='hidden';showPhoto();$('vClose').focus()}
+function closeViewer(){$('viewer').hidden=true;document.body.style.overflow='';if(lastFocus)lastFocus.focus()}
+$('d-photos').addEventListener('click',e=>{const t=e.target.closest('[data-photo]');if(t)openViewer(+t.dataset.photo)});
+$('vClose').addEventListener('click',closeViewer);
+$('vPrev').addEventListener('click',()=>{if(vIdx>0){vIdx--;showPhoto()}});
+$('vNext').addEventListener('click',()=>{if(vIdx<vList.length-1){vIdx++;showPhoto()}});
+$('vZoom').addEventListener('click',()=>setZoom(!vZoomed));
+$('vImg').addEventListener('click',()=>setZoom(!vZoomed));
+$('vStage').addEventListener('click',e=>{if(e.target===$('vStage'))closeViewer()});
+document.addEventListener('keydown',e=>{if($('viewer').hidden)return;if(e.key==='Escape')closeViewer();if(e.key==='ArrowLeft')$('vPrev').click();if(e.key==='ArrowRight')$('vNext').click()});
+
+/* ---------- navigation ---------- */
+function setTab(t){tab=t;$('view-day').hidden=t!=='day';$('view-history').hidden=t!=='history';
+  document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===t)));
+  if(t==='history')renderHistory();else renderDay();}
+function openDay(date){selected=date;setTab('day');window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+document.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click',()=>{range=b.dataset.range;try{localStorage.setItem('kozo-hist-range',range)}catch(e){}renderHistory()}));
+$('prevDay').addEventListener('click',()=>{const i=NIGHTS.findIndex(x=>x.date===selected);if(i>0){selected=NIGHTS[i-1].date;renderDay()}});
+$('nextDay').addEventListener('click',()=>{const i=NIGHTS.findIndex(x=>x.date===selected);if(i<NIGHTS.length-1){selected=NIGHTS[i+1].date;renderDay()}});
+$('dayPick').addEventListener('change',e=>{selected=e.target.value;renderDay()});
+$('q').addEventListener('input',()=>renderLedger(inRange()));
+$('ledger').addEventListener('click',e=>{const tr=e.target.closest('tr[data-date]');if(tr)openDay(tr.dataset.date)});
+$('ledger').addEventListener('keydown',e=>{if(e.key==='Enter'){const tr=e.target.closest('tr[data-date]');if(tr)openDay(tr.dataset.date)}});
+$('dailyChart').addEventListener('click',e=>{const r=e.target.closest('[data-date]');if(r)openDay(r.dataset.date)});
+
+function showToday(){
+  $('todayDate').textContent='Today: '+new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'Africa/Accra'});
+  const last=NIGHTS.length?NIGHTS[NIGHTS.length-1].date:null;
+  $('latestNight').textContent=!last?'No reports yet':(last===accraToday()?'Today’s report is in':'Latest report: '+dayLong(last));
+}
+showToday();setInterval(showToday,60000);
+$('updated').textContent=NIGHTS.length?`${NIGHTS.length} night${NIGHTS.length===1?'':'s'} recorded`:'No nights recorded yet';
+setTab(tab);
+})();
+</script>
