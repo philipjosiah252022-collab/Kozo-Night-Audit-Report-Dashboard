@@ -533,4 +533,4 @@ setTab(tab);
 })();
 </script>
 
-<p style="text-align:center;margin:0 0 24px"><a href="/logout" style="color:#9AABBA;font:13px Figtree,system-ui,sans-serif">Sign out</a></p></body></html>
+<p id="signin" style="text-align:center;margin:0 0 24px;color:#9AABBA;font:13px Figtree,system-ui,sans-serif"><span id="whoami"></span> <a href="/logout" style="color:#9AABBA">Sign out</a></p><script>fetch("/me").then(r=>r.ok?r.json():null).then(j=>{if(j&&j.name)document.getElementById("whoami").textContent="Signed in as "+j.name+" ·"}).catch(()=>{})</script></body></html>

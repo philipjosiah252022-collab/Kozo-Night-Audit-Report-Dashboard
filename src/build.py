@@ -13,8 +13,10 @@ head = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
 nights = json.loads(rd('nights.json'))
 body = rd('body.html').replace('{{LOGO}}', rd('logo.datauri.txt').strip()) \
     .replace('{{DATA}}', json.dumps(nights, ensure_ascii=False).replace('</', '<\\/'))
-foot = ('\n<p style="text-align:center;margin:0 0 24px"><a href="/logout" '
-        'style="color:#9AABBA;font:13px Figtree,system-ui,sans-serif">Sign out</a></p></body></html>')
+foot = ('\n<p id="signin" style="text-align:center;margin:0 0 24px;color:#9AABBA;font:13px Figtree,system-ui,sans-serif">'
+        '<span id="whoami"></span> <a href="/logout" style="color:#9AABBA">Sign out</a></p>'
+        '<script>fetch("/me").then(r=>r.ok?r.json():null).then(j=>{if(j&&j.name)'
+        'document.getElementById("whoami").textContent="Signed in as "+j.name+" ·"}).catch(()=>{})</script></body></html>')
 out = os.path.join(here, '..', 'public', 'index.html')
 open(out, 'w', encoding='utf-8').write(head + '<style>' + rd('style.css') + rd('extra.css') + '</style>\n' + body + foot)
 print('Built public/index.html with', len(nights), 'nights')

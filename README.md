@@ -23,17 +23,45 @@ All amounts are Ghana cedis (GH₵). The Tevalis slips print "GBP", but the figu
 2. Run `python3 src/build.py`.
 3. Commit and push.
 
+## Who can sign in
+
+Each person gets their own **access token**. They can type it on the login page, or open their personal
+one-tap link (`https://<your-site>/access/<token>`), which signs them in for 30 days.
+
+**Give someone access**
+
+```
+node scripts/new-token.js "Kwame Asante" https://<your-site>.onrender.com
+```
+
+This prints their token, their one-tap link, and a `Name:token` entry. Add that entry to the
+`ACCESS_TOKENS` setting on Render, separating people with commas:
+
+```
+ACCESS_TOKENS=Kwame Asante:kozo_xxxx,Ama Mensah:kozo_yyyy
+```
+
+Then send the person their link or token privately, for example by WhatsApp.
+
+**Remove someone's access**
+
+Delete their entry from `ACCESS_TOKENS` and save. Render redeploys, and the old token, link and any
+session already signed in with it stop working.
+
+`DASHBOARD_PASSWORD` is optional: an extra admin login for the night auditor. Set `SESSION_SECRET`
+to a long random value so people stay signed in across deploys. The page shows "Signed in as …"
+with a sign-out link, and failed attempts are rate-limited (10 per 15 minutes).
+
 ## Running it
 
 ```
-DASHBOARD_PASSWORD=choose-a-password npm start
+ACCESS_TOKENS="Your Name:kozo_test" npm start
 ```
 
-Then open http://localhost:10000.
+Then open http://localhost:10000/access/kozo_test.
 
-On Render, create a Node web service with build command `npm install` and start command
-`npm start`, and set the `DASHBOARD_PASSWORD` environment variable. Optionally set
-`SESSION_SECRET` too. Sign-ins last 30 days, and failed attempts are rate-limited.
+On Render, create a Node web service with build command `npm install` and start command `npm start`,
+and set `ACCESS_TOKENS` and `SESSION_SECRET`.
 
 ## Data is not stored here
 
